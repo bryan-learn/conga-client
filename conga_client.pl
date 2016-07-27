@@ -20,12 +20,31 @@ $data{"project_id"} = "TG-MCB110157";
 $data{"resource_id"} = "blacklight.psc.teragrid";
 my $json_text = encode_json \%data;
 
+conga_auth($json_text);
+
+#print("Headers: $headers\n--\n");
+#print("Body: ");
+#print $body . "\n";
+#print Dumper($body) . "\n";
+#print Dumper(\$body) . "\n";
+#print("\n--\n");
+
+print "end script\n";
+
+
+## subroutines for sending conga commands ##
+
+# subroutine to authenticate with conga
+sub conga_auth
+{
+	my ($json_str) = @_;
+
 	# set transfer options
 	$curl->setopt(CURLOPT_HTTPHEADER, ['Content-type: application/json']);	# sending JSON text
 	$curl->setopt(CURLOPT_HEADER, 0);					# do no include header in body
 	$curl->setopt(CURLOPT_URL, 'https://limbo.psc.edu:13500/auth');		# Target URL
 	$curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");				# Requesting POST
-	$curl->setopt(CURLOPT_POSTFIELDS, $json_text);				# our data as json string
+	$curl->setopt(CURLOPT_POSTFIELDS, $json_str);				# our data as json string
 	$curl->setopt(CURLOPT_SSL_VERIFYPEER, 0);				# limbo.psc.edu fails security check
 	
 	# A filehandle, reference to a scalar or reference to a typeglob can be used here.
@@ -53,15 +72,9 @@ my $json_text = encode_json \%data;
 	        print("An error happened: $retcode ".$curl->strerror($retcode)." ".$curl->errbuf."\n");
 	}
 	
+}
 
-#print("Headers: $headers\n--\n");
-#print("Body: ");
-#print $body . "\n";
-#print Dumper($body) . "\n";
-#print Dumper(\$body) . "\n";
-#print("\n--\n");
-
-print "end script\n";
+## handlers for conga messages ##
 
 # basic callback function. Stores data in user-defined pointer.
 sub chunk { my ($data,$pointer)=@_; ${$pointer}=$data; print "test ".$body."\n"; return length($data) }
@@ -91,9 +104,9 @@ sub process_auth_response
 	
 	# examine auth response for success code
 	if($res{'status'} == 0){
-		# successfull; write apiKey and run next command
+		
 	} else {
-		# failed; quit
+
 	}
 	print("api_key is: $res{'results'}[0]{'api_key'}\n");	
 	${$pointer}=%res;	# copy received data into user-defined pointer
