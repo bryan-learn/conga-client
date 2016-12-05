@@ -22,6 +22,7 @@ my $keyfile = "";
 # alloc args
 my $src = "";
 my $dest = "";
+my $rate = 0;
 my $duration = 0;
 
 GetOptions(
@@ -75,7 +76,7 @@ if($command ne "")
 	elsif($command eq "alloc")
 	{
 		# if all alloc args have a value
-		if($keyfile ne "" and $src ne "" and $dest ne "" and $duration != 0)
+		if($keyfile ne "" and $src ne "" and $dest ne "" and $duration != 0 and $rate != 0)
 		{
 			# read apikey from keyfile
 			my $key = read_api_key($keyfile);
@@ -88,6 +89,7 @@ if($command ne "")
 			$data{"src_ip"} = $src;
 			$data{"dst_ip"} = $dest;
 			$data{"duration"} = $duration;
+			$data{"rate"} = $duration;
 
 			# encode data as json string
 			my $json_text = encode_json \%data;
